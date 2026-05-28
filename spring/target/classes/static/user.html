@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>普通用户 - 刷题系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .nav-bar {
+            background-color: #343a40;
+            color: #ffffff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .nav-bar button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            flex: 1;
+        }
+        h3 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .question-box {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+        }
+        .options label {
+            display: block;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+        .btn-submit {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .correct { color: #28a745; }
+        .wrong { color: #dc3545; }
+        .wrong-item {
+            border-bottom: 1px dashed #cccccc;
+            padding: 10px 0;
+        }
+        .wrong-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="nav-bar">
+    <span id="welcomeText">欢迎您，普通用户</span>
+    <button onclick="handleLogout()">安全退出</button>
+</div>
+
+<div class="container">
+    <!-- 刷题板块 -->
+    <div class="card">
+        <h3>在线刷题</h3>
+        <div id="practiceArea">
+            <p>正在加载题目...</p>
+        </div>
+    </div>
+
+    <!-- 错题本板块 -->
+    <div class="card">
+        <h3>我的错题本 (自动记录错题/重做对后自动移除)</h3>
+        <div id="wrongBookArea">
+            <p>正在加载错题本...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUserId = null;
+
+    // 鉴权检查
+    document.addEventListener("DOMContentLoaded", function() {
+        fetch("/api/auth/current")
+            .then(res => res.json())
+            .then(data => {
+                if (!data.loggedIn || data.role !== 'USER') {
+                    window.location.href = "index.html";
+                } else {
+                    currentUserId = data.userId;
+                    document.getElementById("welcomeText").innerText = `欢迎您，${data.username}（普通用户）`;
+                    loadQuestions();
+                    loadWrongBook();
+                }
+            });
+    });
+
+    // 加载刷题库
+    function loadQuestions() {
+        fetch("/api/questions")
+            .then(res => res.json())
+            .then(questions => {
+                const practiceArea = document.getElementById("practiceArea");
+                if (questions.length === 0) {
+                    practiceArea.innerHTML = "<p>当前题库暂无题目。</p>";
+                    return;
+                }
+                practiceArea.innerHTML = "";
+                questions.forEach((q, index) => {
+                    const qBox = document.createElement("div");
+                    qBox.className = "question-box";
+                    qBox.innerHTML = `
+                        <p><strong>第 ${index + 1} 题：${q.title}</strong></p>
+                        <div class="options">
+                            <label><input type="radio" name="q_${q.id}" value="A"> A. ${q.optionA}</label>
+                            <label><input type="radio" name="q_${q.id}" value="B"> B. ${q.optionB}</label>
+                            <label><input type="radio" name="q_${q.id}" value="C"> C. ${q.optionC}</label>
+                            <label><input type="radio" name="q_${q.id}" value="D"> D. ${q.optionD}</label>
+                        </div>
+                        <button class="btn-submit" onclick="submitAnswer(${q.id})">提交答案</button>
+                        <div id="feedback_${q.id}" class="feedback"></div>
+                    `;
+                    practiceArea.appendChild(qBox);
+                });
+            });
+    }
+
+    // 提交在线答题
+    function submitAnswer(questionId) {
+        const selectedOption = document.querySelector(`input[name="q_${questionId}"]:checked`);
+        const feedbackDiv = document.getElementById(`feedback_${questionId}`);
+        if (!selectedOption) {
+            alert("请选择一个选项！");
+            return;
+        }
+
+        const params = new URLSearchParams();
+        params.append("answer", selectedOption.value);
+
+        fetch(`/api/questions/${questionId}/submit`, {
+            method: "POST",
+            body: params
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.correct) {
+                feedbackDiv.innerHTML = `<span class="correct">恭喜回答正确！</span>`;
+            } else {
+                feedbackDiv.innerHTML = `<span class="wrong">回答错误。正确答案是：${data.correctAnswer}。已自动加入错题本。</span>`;
+            }
+            loadWrongBook(); // 实时刷新错题本状态
+        });
+    }
+
+    // 加载错题本
+    function loadWrongBook() {
+        fetch("/api/wrong-book")
+            .then(res => res.json())
+            .then(questions => {
+                const wrongArea = document.getElementById("wrongBookArea");
+                if (questions.length === 0) {
+                    wrongArea.innerHTML = "<p>太棒了！您的错题本目前是空的。</p>";
+                    return;
+                }
+                wrongArea.innerHTML = "";
+                questions.forEach(q => {
+                    const item = document.createElement("div");
+                    item.className = "wrong-item";
+                    item.innerHTML = `
+                        <p><strong>错题：${q.title}</strong></p>
+                        <div class="options">
+                            <label><input type="radio" name="wb_${q.id}" value="A"> A. ${q.optionA}</label>
+                            <label><input type="radio" name="wb_${q.id}" value="B"> B. ${q.optionB}</label>
+                            <label><input type="radio" name="wb_${q.id}" value="C"> C. ${q.optionC}</label>
+                            <label><input type="radio" name="wb_${q.id}" value="D"> D. ${q.optionD}</label>
+                        </div>
+                        <button class="btn-submit" onclick="submitWrongBookAnswer(${q.id})">重新作答</button>
+                        <div id="wb_feedback_${q.id}" class="feedback"></div>
+                    `;
+                    wrongArea.appendChild(item);
+                });
+            });
+    }
+
+    // 错题重做提交
+    function submitWrongBookAnswer(questionId) {
+        const selectedOption = document.querySelector(`input[name="wb_${questionId}"]:checked`);
+        const feedbackDiv = document.getElementById(`wb_feedback_${questionId}`);
+        if (!selectedOption) {
+            alert("请选择一个选项！");
+            return;
+        }
+
+        const params = new URLSearchParams();
+        params.append("answer", selectedOption.value);
+
+        fetch(`/api/questions/${questionId}/submit`, {
+            method: "POST",
+            body: params
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.correct) {
+                feedbackDiv.innerHTML = `<span class="correct">重做正确！已移出错题本。</span>`;
+                setTimeout(() => {
+                    loadWrongBook(); // 成功后延迟刷新
+                }, 1000);
+            } else {
+                feedbackDiv.innerHTML = `<span class="wrong">回答仍然错误。正确答案是：${data.correctAnswer}。</span>`;
+            }
+        });
+    }
+
+    // 退出
+    function handleLogout() {
+        fetch("/api/auth/logout", { method: "POST" })
+            .then(() => { window.location.href = "index.html"; });
+    }
+</script>
+
+</body>
+</html>

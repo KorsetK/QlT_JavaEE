@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员后台 - 刷题系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .nav-bar {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .nav-bar button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .form-card {
+            width: 400px;
+        }
+        .list-card {
+            flex: 1;
+        }
+        h3 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #333;
+        }
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button.btn-add {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="nav-bar">
+    <span id="welcomeText">欢迎您，管理员</span>
+    <button onclick="handleLogout()">安全退出</button>
+</div>
+
+<div class="container">
+    <!-- 添加/修改表单 -->
+    <div class="card form-card">
+        <h3 id="formTitle">新增选择题</h3>
+        <form id="questionForm" onsubmit="saveQuestion(event)">
+            <input type="hidden" id="questionId">
+            <div class="form-group">
+                <label for="title">题干描述</label>
+                <textarea id="title" required rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="optionA">选项 A</label>
+                <input type="text" id="optionA" required>
+            </div>
+            <div class="form-group">
+                <label for="optionB">选项 B</label>
+                <input type="text" id="optionB" required>
+            </div>
+            <div class="form-group">
+                <label for="optionC">选项 C</label>
+                <input type="text" id="optionC" required>
+            </div>
+            <div class="form-group">
+                <label for="optionD">选项 D</label>
+                <input type="text" id="optionD" required>
+            </div>
+            <div class="form-group">
+                <label for="correctAnswer">正确答案</label>
+                <select id="correctAnswer">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-add" id="btnSave">确认添加</button>
+            <button type="button" style="margin-top: 10px; width: 100%; display: none;" id="btnCancel" onclick="resetForm()">取消编辑</button>
+        </form>
+    </div>
+
+    <!-- 题目展示列表 -->
+    <div class="card list-card">
+        <h3>系统题库列表</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>题干</th>
+                <th>A/B/C/D 选项</th>
+                <th>正确答案</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="questionTableBody">
+            <!-- 动态生成 -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // 权限校验
+    document.addEventListener("DOMContentLoaded", function() {
+        fetch("/api/auth/current")
+            .then(res => res.json())
+            .then(data => {
+                if (!data.loggedIn || data.role !== 'ADMIN') {
+                    window.location.href = "index.html";
+                } else {
+                    document.getElementById("welcomeText").innerText = `欢迎您，${data.username}（系统管理员）`;
+                    loadQuestions();
+                }
+            });
+    });
+
+    // 加载题库
+    function loadQuestions() {
+        fetch("/api/questions")
+            .then(res => res.json())
+            .then(questions => {
+                const tbody = document.getElementById("questionTableBody");
+                tbody.innerHTML = "";
+                questions.forEach(q => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${q.id}</td>
+                        <td><strong>${q.title}</strong></td>
+                        <td>
+                            A: ${q.optionA}<br>
+                            B: ${q.optionB}<br>
+                            C: ${q.optionC}<br>
+                            D: ${q.optionD}
+                        </td>
+                        <td style="color: green; font-weight: bold; text-align: center;">${q.correctAnswer}</td>
+                        <td>
+                            <button class="btn-delete" style="background-color: #007bff; margin-bottom: 5px;" onclick="editQuestion(${q.id})">修改</button>
+                            <button class="btn-delete" onclick="deleteQuestion(${q.id})">删除</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            });
+    }
+
+    // 新增 or 修改 保存
+    function saveQuestion(event) {
+        event.preventDefault();
+        const id = document.getElementById("questionId").value;
+        const title = document.getElementById("title").value;
+        const optionA = document.getElementById("optionA").value;
+        const optionB = document.getElementById("optionB").value;
+        const optionC = document.getElementById("optionC").value;
+        const optionD = document.getElementById("optionD").value;
+        const correctAnswer = document.getElementById("correctAnswer").value;
+
+        const url = id ? `/api/questions/${id}` : "/api/questions";
+        const method = id ? "PUT" : "POST";
+
+        fetch(url, {
+            method: method,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ title, optionA, optionB, optionC, optionD, correctAnswer })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                resetForm();
+                loadQuestions();
+            } else {
+                alert(data.message);
+            }
+        });
+    }
+
+    // 修改回显
+    function editQuestion(id) {
+        fetch(`/api/questions/${id}`)
+            .then(res => res.json())
+            .then(q => {
+                document.getElementById("questionId").value = q.id;
+                document.getElementById("title").value = q.title;
+                document.getElementById("optionA").value = q.optionA;
+                document.getElementById("optionB").value = q.optionB;
+                document.getElementById("optionC").value = q.optionC;
+                document.getElementById("optionD").value = q.optionD;
+                document.getElementById("correctAnswer").value = q.correctAnswer;
+
+                document.getElementById("formTitle").innerText = "编辑题目";
+                document.getElementById("btnSave").innerText = "保存修改";
+                document.getElementById("btnSave").style.backgroundColor = "#007bff";
+                document.getElementById("btnCancel").style.display = "block";
+            });
+    }
+
+    // 重置表单
+    function resetForm() {
+        document.getElementById("questionForm").reset();
+        document.getElementById("questionId").value = "";
+        document.getElementById("formTitle").innerText = "新增选择题";
+        document.getElementById("btnSave").innerText = "确认添加";
+        document.getElementById("btnSave").style.backgroundColor = "#28a745";
+        document.getElementById("btnCancel").style.display = "none";
+    }
+
+    // 删除题目
+    function deleteQuestion(id) {
+        if (confirm("确定要删除这道题吗？删除后，用户的错题本关联也会一并安全自动删除。")) {
+            fetch(`/api/questions/${id}`, { method: "DELETE" })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        loadQuestions();
+                    }
+                });
+        }
+    }
+
+    // 退出登录
+    function handleLogout() {
+        fetch("/api/auth/logout", { method: "POST" })
+            .then(() => { window.location.href = "index.html"; });
+    }
+</script>
+
+</body>
+</html>
