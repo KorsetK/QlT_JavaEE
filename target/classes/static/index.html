@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>刷题系统 - 登录</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 360px;
+        }
+        h2 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #666666;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error-msg {
+            color: #dc3545;
+            font-size: 13px;
+            margin-bottom: 12px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>系统登录</h2>
+    <div id="errorMsg" class="error-msg"></div>
+    <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+            <label for="username">用户名</label>
+            <input type="text" id="username" required placeholder="请输入用户名">
+        </div>
+        <div class="form-group">
+            <label for="password">密码</label>
+            <input type="password" id="password" required placeholder="请输入密码">
+        </div>
+        <button type="submit">登 录</button>
+    </form>
+</div>
+
+<script>
+    function handleLogin(event) {
+        event.preventDefault();
+        const usernameInput = document.getElementById("username").value;
+        const passwordInput = document.getElementById("password").value;
+        const errorMsg = document.getElementById("errorMsg");
+
+        const params = new URLSearchParams();
+        params.append("username", usernameInput);
+        params.append("password", passwordInput);
+
+        fetch("/api/auth/login", {
+            method: "POST",
+            body: params
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error("用户名或密码错误");
+        })
+        .then(data => {
+            if (data.success) {
+                if (data.role === "ADMIN") {
+                    window.location.href = "admin.html";
+                } else {
+                    window.location.href = "user.html";
+                }
+            }
+        })
+        .catch(error => {
+            errorMsg.innerText = error.message;
+            errorMsg.style.display = "block";
+        });
+    }
+</script>
+
+</body>
+</html>
