@@ -4,71 +4,212 @@
     <meta charset="UTF-8">
     <title>刷题系统 - 登录</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
         }
+
+        /* 背景装饰圆圈 */
+        body::before,
+        body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+
+        body::before {
+            width: 400px;
+            height: 400px;
+            background: white;
+            top: -100px;
+            right: -100px;
+        }
+
+        body::after {
+            width: 300px;
+            height: 300px;
+            background: white;
+            bottom: -50px;
+            left: -50px;
+        }
+
         .login-container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 360px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 50px 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.5s ease-out;
         }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         h2 {
             text-align: center;
             color: #333333;
-            margin-bottom: 24px;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 2px;
         }
+
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            position: relative;
         }
+
         label {
             display: block;
-            margin-bottom: 6px;
-            color: #666666;
+            margin-bottom: 8px;
+            color: #555555;
             font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s;
         }
-        input[type="text"], input[type="password"] {
+
+        input[type="text"], 
+        input[type="password"] {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #cccccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 14px;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background-color: #fafafa;
         }
+
+        input[type="text"]:focus, 
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input::placeholder {
+            color: #aaa;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
         button {
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
-            color: #ffffff;
+            flex: 1;
+            padding: 14px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        .btn-login {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
         }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: #ffffff;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
         .error-msg {
             color: #dc3545;
-            font-size: 13px;
-            margin-bottom: 12px;
+            font-size: 14px;
+            margin-bottom: 20px;
             text-align: center;
             display: none;
+            padding: 12px;
+            background-color: #fff5f5;
+            border-left: 4px solid #dc3545;
+            border-radius: 4px;
+            animation: shake 0.5s;
+        }
+
+        .success-msg {
+            color: #28a745;
+            font-size: 14px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+            padding: 12px;
+            background-color: #f0fff4;
+            border-left: 4px solid #28a745;
+            border-radius: 4px;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 40px 30px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="login-container">
-    <h2>系统登录</h2>
+    <h2>📚 系统登录</h2>
     <div id="errorMsg" class="error-msg"></div>
+    <div id="successMsg" class="success-msg"></div>
     <form id="loginForm" onsubmit="handleLogin(event)">
         <div class="form-group">
             <label for="username">用户名</label>
@@ -78,16 +219,37 @@
             <label for="password">密码</label>
             <input type="password" id="password" required placeholder="请输入密码">
         </div>
-        <button type="submit">登 录</button>
+        <div class="button-group">
+            <button type="submit" class="btn-login">登 录</button>
+            <button type="button" class="btn-register" onclick="handleRegister()">注 册</button>
+        </div>
     </form>
 </div>
 
 <script>
+    function showMessage(type, message) {
+        const errorMsg = document.getElementById("errorMsg");
+        const successMsg = document.getElementById("successMsg");
+        
+        if (type === "error") {
+            errorMsg.innerText = message;
+            errorMsg.style.display = "block";
+            successMsg.style.display = "none";
+        } else if (type === "success") {
+            successMsg.innerText = message;
+            successMsg.style.display = "block";
+            errorMsg.style.display = "none";
+        }
+    }
+
     function handleLogin(event) {
         event.preventDefault();
         const usernameInput = document.getElementById("username").value;
         const passwordInput = document.getElementById("password").value;
-        const errorMsg = document.getElementById("errorMsg");
+
+        // 隐藏消息
+        document.getElementById("errorMsg").style.display = "none";
+        document.getElementById("successMsg").style.display = "none";
 
         const params = new URLSearchParams();
         params.append("username", usernameInput);
@@ -113,8 +275,46 @@
             }
         })
         .catch(error => {
-            errorMsg.innerText = error.message;
-            errorMsg.style.display = "block";
+            showMessage("error", error.message);
+        });
+    }
+
+    function handleRegister() {
+        const usernameInput = document.getElementById("username").value;
+        const passwordInput = document.getElementById("password").value;
+
+        // 验证输入
+        if (!usernameInput || !usernameInput.trim()) {
+            showMessage("error", "请输入用户名");
+            return;
+        }
+
+        if (!passwordInput || passwordInput.length < 6) {
+            showMessage("error", "密码长度至少为6位");
+            return;
+        }
+
+        const params = new URLSearchParams();
+        params.append("username", usernameInput.trim());
+        params.append("password", passwordInput);
+
+        fetch("/api/auth/register", {
+            method: "POST",
+            body: params
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showMessage("success", data.message);
+                // 清空表单
+                document.getElementById("username").value = "";
+                document.getElementById("password").value = "";
+            } else {
+                showMessage("error", data.message);
+            }
+        })
+        .catch(error => {
+            showMessage("error", "注册失败，请稍后重试");
         });
     }
 </script>

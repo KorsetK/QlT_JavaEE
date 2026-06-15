@@ -4,22 +4,29 @@
     <meta charset="UTF-8">
     <title>普通用户 - 刷题系统</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f6f9;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
+
         .nav-bar {
-            background-color: #343a40;
+            background: linear-gradient(135deg, #343a40 0%, #2c3e50 100%);
             color: #ffffff;
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-radius: 6px;
-            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+
         .nav-bar button {
             background-color: #dc3545;
             color: white;
@@ -27,54 +34,225 @@
             padding: 8px 16px;
             border-radius: 4px;
             cursor: pointer;
+            transition: all 0.3s;
         }
-        .container {
+
+        .nav-bar button:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+        }
+
+        /* 标签页导航 */
+        .tab-nav {
+            background-color: #ffffff;
+            border-bottom: 2px solid #e0e0e0;
             display: flex;
-            gap: 20px;
+            padding: 0 30px;
         }
+
+        .tab-button {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .tab-button:hover {
+            color: #007bff;
+        }
+
+        .tab-button.active {
+            color: #007bff;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #007bff;
+        }
+
+        /* 内容区域 */
+        .tab-content {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .card {
             background: white;
-            padding: 20px;
-            border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            flex: 1;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            max-width: 900px;
+            margin: 0 auto;
         }
+
         h3 {
             border-bottom: 2px solid #007bff;
-            padding-bottom: 10px;
-            margin-top: 0;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            color: #333;
+            font-size: 22px;
         }
+
         .question-box {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #e9ecef;
-            border-radius: 4px;
+            margin-bottom: 30px;
+            padding: 25px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            background-color: #fafafa;
+            transition: all 0.3s;
         }
+
+        .question-box:hover {
+            border-color: #007bff;
+            box-shadow: 0 4px 12px rgba(0,123,255,0.1);
+        }
+
+        .question-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
         .options label {
             display: block;
-            margin: 10px 0;
+            margin: 12px 0;
+            padding: 12px 15px;
             cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 6px;
+            transition: all 0.2s;
+            background-color: white;
         }
+
+        .options label:hover {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+
         .btn-submit {
-            background-color: #007bff;
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
+            padding: 12px 30px;
+            border-radius: 6px;
             cursor: pointer;
-        }
-        .feedback {
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s;
             margin-top: 15px;
-            font-weight: bold;
         }
-        .correct { color: #28a745; }
-        .wrong { color: #dc3545; }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,123,255,0.3);
+        }
+
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .correct { 
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .wrong { 
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
         .wrong-item {
-            border-bottom: 1px dashed #cccccc;
-            padding: 10px 0;
+            border-bottom: 2px dashed #e0e0e0;
+            padding: 25px 0;
         }
+
         .wrong-item:last-child {
             border-bottom: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .stats-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
         }
     </style>
 </head>
@@ -85,18 +263,41 @@
     <button onclick="handleLogout()">安全退出</button>
 </div>
 
-<div class="container">
-    <!-- 刷题板块 -->
+<!-- 标签页导航 -->
+<div class="tab-nav">
+    <button class="tab-button active" onclick="switchTab('practice')">📝 在线刷题</button>
+    <button class="tab-button" onclick="switchTab('wrongbook')">❌ 我的错题本</button>
+</div>
+
+<!-- 在线刷题标签页 -->
+<div id="practice-tab" class="tab-content active">
     <div class="card">
         <h3>在线刷题</h3>
+        <div id="statsBar" class="stats-bar" style="display: none;">
+            <div class="stat-item">
+                <div class="stat-number" id="totalQuestions">0</div>
+                <div class="stat-label">总题数</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="answeredCount">0</div>
+                <div class="stat-label">已作答</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="correctCount">0</div>
+                <div class="stat-label">正确</div>
+            </div>
+        </div>
         <div id="practiceArea">
             <p>正在加载题目...</p>
         </div>
     </div>
+</div>
 
-    <!-- 错题本板块 -->
+<!-- 错题本标签页 -->
+<div id="wrongbook-tab" class="tab-content">
     <div class="card">
-        <h3>我的错题本 (自动记录错题/重做对后自动移除)</h3>
+        <h3>我的错题本</h3>
+        <p style="color: #666; margin-bottom: 20px;">💡 提示：错题会自动记录，答对后自动移除。建议定期复习错题，加深理解。</p>
         <div id="wrongBookArea">
             <p>正在加载错题本...</p>
         </div>
@@ -105,6 +306,102 @@
 
 <script>
     let currentUserId = null;
+    let correctQuestions = new Set();
+    let wrongQuestions = new Set();
+    let practiceLoaded = false;
+
+    function updateStats() {
+        const answeredCount = correctQuestions.size + wrongQuestions.size;
+        document.getElementById('answeredCount').textContent = answeredCount;
+        document.getElementById('correctCount').textContent = correctQuestions.size;
+    }
+
+    function resetWrongQuestions() {
+        if (wrongQuestions.size === 0) {
+            return;
+        }
+
+        wrongQuestions.forEach(questionId => {
+            const questionBox = document.getElementById(`question_${questionId}`);
+            if (!questionBox) {
+                return;
+            }
+
+            questionBox.querySelectorAll(`input[name="q_${questionId}"]`).forEach(input => {
+                input.disabled = false;
+                input.checked = false;
+            });
+
+            const submitBtn = questionBox.querySelector(`#btn_${questionId}`);
+            if (submitBtn) {
+                submitBtn.disabled = false;
+            }
+
+            const feedbackDiv = questionBox.querySelector(`#feedback_${questionId}`);
+            if (feedbackDiv) {
+                feedbackDiv.innerHTML = '';
+                feedbackDiv.className = 'feedback';
+            }
+        });
+
+        wrongQuestions.clear();
+        updateStats();
+    }
+
+    function applyQuestionState(q, qBox) {
+        const questionId = q.id;
+        const feedbackDiv = qBox.querySelector(`#feedback_${questionId}`);
+        const submitBtn = qBox.querySelector(`#btn_${questionId}`);
+        const inputs = qBox.querySelectorAll(`input[name="q_${questionId}"]`);
+
+        if (correctQuestions.has(questionId)) {
+            inputs.forEach(input => input.disabled = true);
+            if (submitBtn) {
+                submitBtn.disabled = true;
+            }
+            if (feedbackDiv) {
+                feedbackDiv.innerHTML = `<span class="correct">✅ 恭喜回答正确！继续保持！</span>`;
+                feedbackDiv.className = 'feedback correct show';
+            }
+        } else if (wrongQuestions.has(questionId)) {
+            inputs.forEach(input => input.disabled = true);
+            if (submitBtn) {
+                submitBtn.disabled = true;
+            }
+            if (feedbackDiv) {
+                feedbackDiv.innerHTML = `<span class="wrong">❌ 该题上次回答错误，已加入错题本。返回刷题页后可重新尝试。</span>`;
+                feedbackDiv.className = 'feedback wrong show';
+            }
+        }
+    }
+
+    // 切换标签页
+    function switchTab(tabName) {
+        // 隐藏所有内容
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        
+        // 移除所有按钮的active状态
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('active');
+        });
+        
+        // 显示选中的内容
+        if (tabName === 'practice') {
+            document.getElementById('practice-tab').classList.add('active');
+            document.querySelectorAll('.tab-button')[0].classList.add('active');
+            if (!practiceLoaded) {
+                loadQuestions();
+            } else {
+                resetWrongQuestions();
+            }
+        } else if (tabName === 'wrongbook') {
+            document.getElementById('wrongbook-tab').classList.add('active');
+            document.querySelectorAll('.tab-button')[1].classList.add('active');
+            loadWrongBook(); // 切换到错题本时刷新
+        }
+    }
 
     // 鉴权检查
     document.addEventListener("DOMContentLoaded", function() {
@@ -117,7 +414,6 @@
                     currentUserId = data.userId;
                     document.getElementById("welcomeText").innerText = `欢迎您，${data.username}（普通用户）`;
                     loadQuestions();
-                    loadWrongBook();
                 }
             });
     });
@@ -128,27 +424,38 @@
             .then(res => res.json())
             .then(questions => {
                 const practiceArea = document.getElementById("practiceArea");
+                const statsBar = document.getElementById("statsBar");
+                
                 if (questions.length === 0) {
                     practiceArea.innerHTML = "<p>当前题库暂无题目。</p>";
                     return;
                 }
+
+                // 显示统计栏
+                statsBar.style.display = 'flex';
+                document.getElementById('totalQuestions').textContent = questions.length;
+
                 practiceArea.innerHTML = "";
                 questions.forEach((q, index) => {
                     const qBox = document.createElement("div");
                     qBox.className = "question-box";
+                    qBox.id = `question_${q.id}`;
                     qBox.innerHTML = `
-                        <p><strong>第 ${index + 1} 题：${q.title}</strong></p>
+                        <div class="question-title">第 ${index + 1} 题：${q.title}</div>
                         <div class="options">
                             <label><input type="radio" name="q_${q.id}" value="A"> A. ${q.optionA}</label>
                             <label><input type="radio" name="q_${q.id}" value="B"> B. ${q.optionB}</label>
                             <label><input type="radio" name="q_${q.id}" value="C"> C. ${q.optionC}</label>
                             <label><input type="radio" name="q_${q.id}" value="D"> D. ${q.optionD}</label>
                         </div>
-                        <button class="btn-submit" onclick="submitAnswer(${q.id})">提交答案</button>
+                        <button class="btn-submit" id="btn_${q.id}" onclick="submitAnswer(${q.id})">提交答案</button>
                         <div id="feedback_${q.id}" class="feedback"></div>
                     `;
                     practiceArea.appendChild(qBox);
+                    applyQuestionState(q, qBox);
                 });
+                practiceLoaded = true;
+                updateStats();
             });
     }
 
@@ -156,10 +463,18 @@
     function submitAnswer(questionId) {
         const selectedOption = document.querySelector(`input[name="q_${questionId}"]:checked`);
         const feedbackDiv = document.getElementById(`feedback_${questionId}`);
+        const submitBtn = document.getElementById(`btn_${questionId}`);
+        
         if (!selectedOption) {
             alert("请选择一个选项！");
             return;
         }
+
+        // 禁用按钮和选项
+        submitBtn.disabled = true;
+        document.querySelectorAll(`input[name="q_${questionId}"]`).forEach(input => {
+            input.disabled = true;
+        });
 
         const params = new URLSearchParams();
         params.append("answer", selectedOption.value);
@@ -171,11 +486,18 @@
         .then(res => res.json())
         .then(data => {
             if (data.correct) {
-                feedbackDiv.innerHTML = `<span class="correct">恭喜回答正确！</span>`;
+                correctQuestions.add(questionId);
+                wrongQuestions.delete(questionId);
+                feedbackDiv.innerHTML = `<span class="correct">✅ 恭喜回答正确！继续保持！</span>`;
+                feedbackDiv.className = "feedback correct show";
             } else {
-                feedbackDiv.innerHTML = `<span class="wrong">回答错误。正确答案是：${data.correctAnswer}。已自动加入错题本。</span>`;
+                wrongQuestions.add(questionId);
+                correctQuestions.delete(questionId);
+                feedbackDiv.innerHTML = `<span class="wrong">❌ 回答错误。已自动加入错题本，请到\"我的错题本\"标签页查看和复习。</span>`;
+                feedbackDiv.className = "feedback wrong show";
             }
-            loadWrongBook(); // 实时刷新错题本状态
+            
+            updateStats();
         });
     }
 
@@ -186,7 +508,13 @@
             .then(questions => {
                 const wrongArea = document.getElementById("wrongBookArea");
                 if (questions.length === 0) {
-                    wrongArea.innerHTML = "<p>太棒了！您的错题本目前是空的。</p>";
+                    wrongArea.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🎉</div>
+                            <h3>太棒了！</h3>
+                            <p>您的错题本目前是空的，继续保持！</p>
+                        </div>
+                    `;
                     return;
                 }
                 wrongArea.innerHTML = "";
@@ -194,14 +522,14 @@
                     const item = document.createElement("div");
                     item.className = "wrong-item";
                     item.innerHTML = `
-                        <p><strong>错题：${q.title}</strong></p>
+                        <div class="question-title">错题：${q.title}</div>
                         <div class="options">
                             <label><input type="radio" name="wb_${q.id}" value="A"> A. ${q.optionA}</label>
                             <label><input type="radio" name="wb_${q.id}" value="B"> B. ${q.optionB}</label>
                             <label><input type="radio" name="wb_${q.id}" value="C"> C. ${q.optionC}</label>
                             <label><input type="radio" name="wb_${q.id}" value="D"> D. ${q.optionD}</label>
                         </div>
-                        <button class="btn-submit" onclick="submitWrongBookAnswer(${q.id})">重新作答</button>
+                        <button class="btn-submit" onclick="submitWrongBookAnswer(event, ${q.id})">重新作答</button>
                         <div id="wb_feedback_${q.id}" class="feedback"></div>
                     `;
                     wrongArea.appendChild(item);
@@ -210,13 +538,21 @@
     }
 
     // 错题重做提交
-    function submitWrongBookAnswer(questionId) {
+    function submitWrongBookAnswer(event, questionId) {
         const selectedOption = document.querySelector(`input[name="wb_${questionId}"]:checked`);
         const feedbackDiv = document.getElementById(`wb_feedback_${questionId}`);
+        
         if (!selectedOption) {
             alert("请选择一个选项！");
             return;
         }
+
+        // 禁用按钮和选项
+        const submitBtn = event.target;
+        submitBtn.disabled = true;
+        document.querySelectorAll(`input[name="wb_${questionId}"]`).forEach(input => {
+            input.disabled = true;
+        });
 
         const params = new URLSearchParams();
         params.append("answer", selectedOption.value);
@@ -228,13 +564,74 @@
         .then(res => res.json())
         .then(data => {
             if (data.correct) {
-                feedbackDiv.innerHTML = `<span class="correct">重做正确！已移出错题本。</span>`;
-                setTimeout(() => {
-                    loadWrongBook(); // 成功后延迟刷新
-                }, 1000);
+                correctQuestions.add(questionId);
+                wrongQuestions.delete(questionId);
+                updateStats();
+                feedbackDiv.innerHTML = `<span class="correct">✅ 重做正确！已移出错题本。</span>`;
+                feedbackDiv.className = "feedback correct show";
+
+                const practiceBox = document.getElementById(`question_${questionId}`);
+                if (practiceBox) {
+                    practiceBox.querySelectorAll(`input[name="q_${questionId}"]`).forEach(input => {
+                        input.disabled = true;
+                    });
+                    const practiceBtn = practiceBox.querySelector(`#btn_${questionId}`);
+                    if (practiceBtn) {
+                        practiceBtn.disabled = true;
+                    }
+                    const practiceFeedback = practiceBox.querySelector(`#feedback_${questionId}`);
+                    if (practiceFeedback) {
+                        practiceFeedback.innerHTML = `<span class="correct">✅ 恭喜回答正确！继续保持！</span>`;
+                        practiceFeedback.className = "feedback correct show";
+                    }
+                }
+                
+                // 找到包含这道题的容器并添加淡出动画
+                const questionContainer = submitBtn.closest('.wrong-item');
+                if (questionContainer) {
+                    questionContainer.style.transition = 'all 0.5s ease-out';
+                    questionContainer.style.opacity = '0';
+                    questionContainer.style.transform = 'translateX(-100%)';
+                    
+                    // 动画结束后移除元素
+                    setTimeout(() => {
+                        questionContainer.remove();
+                        
+                        // 检查是否还有错题，如果没有则显示空状态
+                        const wrongArea = document.getElementById("wrongBookArea");
+                        const remainingItems = wrongArea.querySelectorAll('.wrong-item');
+                        if (remainingItems.length === 0) {
+                            wrongArea.innerHTML = `
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">🎉</div>
+                                    <h3>太棒了！</h3>
+                                    <p>您的错题本目前是空的，继续保持！</p>
+                                </div>
+                            `;
+                        }
+                    }, 500);
+                }
             } else {
-                feedbackDiv.innerHTML = `<span class="wrong">回答仍然错误。正确答案是：${data.correctAnswer}。</span>`;
+                feedbackDiv.innerHTML = `<span class="wrong">❌ 回答仍然错误。请仔细思考，不要急于查看答案解析。</span>`;
+                feedbackDiv.className = "feedback wrong show";
+                
+                // 答错时重新启用按钮，允许再次作答
+                submitBtn.disabled = false;
+                document.querySelectorAll(`input[name="wb_${questionId}"]`).forEach(input => {
+                    input.disabled = false;
+                });
             }
+        })
+        .catch(error => {
+            console.error('提交失败:', error);
+            feedbackDiv.innerHTML = `<span class="wrong"> 提交失败，请稍后重试。</span>`;
+            feedbackDiv.className = "feedback wrong show";
+            
+            // 出错时重新启用按钮
+            submitBtn.disabled = false;
+            document.querySelectorAll(`input[name="wb_${questionId}"]`).forEach(input => {
+                input.disabled = false;
+            });
         });
     }
 

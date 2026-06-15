@@ -37,6 +37,38 @@ public class AuthController {
         return ResponseEntity.status(401).body(response);
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<Map<String, Object>> register(
+            @RequestParam("username") String username,
+            @RequestParam("password") String password) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        // 验证输入
+        if (username == null || username.trim().isEmpty()) {
+            response.put("success", false);
+            response.put("message", "用户名不能为空");
+            return ResponseEntity.badRequest().body(response);
+        }
+        
+        if (password == null || password.length() < 6) {
+            response.put("success", false);
+            response.put("message", "密码长度至少为6位");
+            return ResponseEntity.badRequest().body(response);
+        }
+        
+        boolean success = authService.register(username.trim(), password);
+        if (success) {
+            response.put("success", true);
+            response.put("message", "注册成功，请登录");
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("success", false);
+            response.put("message", "用户名已存在");
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
     @PostMapping("/logout")
     public ResponseEntity<Map<String, Object>> logout(HttpSession session) {
         session.invalidate();
