@@ -1,0 +1,67 @@
+<mxfile host="app.diagrams.net" agent="5.0">
+  <diagram name="用户与试题管理" id="user_question">
+    <mxGraphModel dx="1030" dy="527" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="entity_user" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1" value="用户" vertex="1">
+          <mxGeometry height="60" width="100" x="210" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="attr_userid" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12" value="用户ID(PK)" vertex="1">
+          <mxGeometry height="50" width="80" x="120" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="attr_username" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12" value="用户名(UK)" vertex="1">
+          <mxGeometry height="50" width="80" x="120" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="attr_password" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12" value="密码" vertex="1">
+          <mxGeometry height="50" width="80" x="120" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="attr_role" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12" value="角色" vertex="1">
+          <mxGeometry height="50" width="80" x="120" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="line1" edge="1" parent="1" source="attr_userid" style="rounded=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=none;endFill=0;" target="entity_user">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="line2" edge="1" parent="1" source="attr_username" style="rounded=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=none;endFill=0;" target="entity_user">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="line3" edge="1" parent="1" source="attr_password" style="rounded=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=none;endFill=0;" target="entity_user">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="line4" edge="1" parent="1" source="attr_role" style="rounded=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=none;endFill=0;" target="entity_user">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="relation_manage" parent="1" style="rhombus;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1" value="创建管理(role=ADMIN)" vertex="1">
+          <mxGeometry height="90" width="100" x="400" y="285" as="geometry" />
+        </mxCell>
+        <mxCell id="line5_conn" edge="1" parent="1" source="entity_user" style="rounded=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=none;endFill=0;" target="relation_manage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="entity_question" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1" value="试题" vertex="1">
+          <mxGeometry height="60" width="100" x="590" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="line6" edge="1" parent="1" source="relation_manage" style="rounded=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=none;endFill=0;" target="entity_question">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="attr_qid" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12" value="试题ID(PK)" vertex="1">
+          <mxGeometry height="50" width="80" x="770" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="attr_qtitle" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12" value="题目内容" vertex="1">
+          <mxGeometry height="50" width="80" x="700" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="line7" edge="1" parent="1" source="attr_qid" style="rounded=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=none;endFill=0;" target="entity_question">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="line8" edge="1" parent="1" source="attr_qtitle" style="rounded=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=none;endFill=0;" target="entity_question">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="qmEEzy4D64lhmGSN0Ev1-1" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" value="1" vertex="1">
+          <mxGeometry height="30" width="60" x="290" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="qmEEzy4D64lhmGSN0Ev1-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" value="n" vertex="1">
+          <mxGeometry height="30" width="60" x="550" y="300" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
